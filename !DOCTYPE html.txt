@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>商品系統</title>
+</head>
+<body>
+  <h1>商品數量管控系統</h1>
+
+  <input id="name" placeholder="商品名稱" />
+  <input id="quantity" type="number" placeholder="數量" />
+  <input id="price" type="number" placeholder="價格" />
+  <button onclick="addProduct()">新增商品</button>
+  <button onclick="downloadCSV()">匯出 CSV</button>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>名稱</th>
+        <th>庫存</th>
+        <th>價格</th>
+        <th>賣出次數</th>
+        <th>賣出金額</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody id="productTable"></tbody>
+  </table>
+
+  <h3 id="totalRevenue">總營收：$0</h3>
+
+  <script>
+    let products = JSON.parse(localStorage.getItem("products") || "[]");
+
+    function saveProducts() {
+      localStorage.setItem("products", JSON.stringify(products));
+    }
+
+    function renderTable() {
+      const table = document.getElementById("productTable");
+      table.innerHTML = "";
+
+      let totalRevenue = 0;
+
+      products.forEach((p, i) => {
+        const total = p.soldCount * p.price;
+        totalRevenue += total;
+
+        const decreaseButton = p.soldCount > 0
+          ? `<button onclick="decreaseSold(${i})">-1 賣出</button>`
+          : `<button onclick="removeProduct(${i})">刪除此商品</button>`;
+
+        const row = `<tr>
+          <td>${p.name}</td>
+          <td>${p.quantity}</td>
+          <td>${p.price}</td>
+          <td>${p.soldCount}</td>
+          <td>${total}</td>
+          <td>
+            <button onclick="sell(${i})" ${p.quantity <= 0 ? "disabled" : ""}>賣
