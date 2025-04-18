@@ -111,7 +111,8 @@
         csv += `${p.name},${p.quantity},${p.price},${p.soldCount},${p.price * p.soldCount}\n`;
       });
 
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const bom = "\uFEFF"; // 加上 BOM 讓 Excel 正常顯示中文
+      const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
